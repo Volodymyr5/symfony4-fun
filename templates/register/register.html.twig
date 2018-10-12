@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Site register!{% endblock %}
+
+{% block body %}
+        {{ form_start(form) }}
+
+        {{ form_row(form.username) }}
+
+        {{ form_end(form) }}
+{% endblock %}
