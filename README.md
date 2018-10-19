@@ -5,7 +5,7 @@ yarn install
 
 https://coursehunters.net/course/php-symfony-4-praktika-sozdaniya-realnogo-prilozheniya
 
-Lesson 51
+Lesson 58
 
 bin/console debug:autowiring <Service Class or Interface>
 

@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\MicroPost;
+use App\Entity\User;
 use App\Form\MicroPostType;
 use App\Repository\MicroPostRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -74,10 +75,18 @@ class MicroPostController
     /**
      * @Route("/", name="micro_post_index")
      */
-    public function index()
+    public function index(TokenStorageInterface $tokenStorage)
     {
+        $currentUser = $tokenStorage->getToken()->getUser();
+
+        if ($currentUser instanceof User) {
+            $posts = $this->microPostRepository->findAllByUsers($currentUser->getFollowing());
+        } else {
+            $posts = $this->microPostRepository->findBy([], ['time' => 'DESC']);
+        }
+
         $html = $this->twig->render('micro-post/index.html.twig', [
-            'posts' => $this->microPostRepository->findBy([], ['time' => 'DESC']),
+            'posts' => $posts
         ]);
 
         return new Response($html);
@@ -93,7 +102,6 @@ class MicroPostController
         $user = $tokenStorage->getToken()->getUser();
 
         $microPost = new MicroPost();
-        $microPost->setTime(new \DateTime());
         $microPost->setUser($user);
 
         $form = $this->formFactory->create(MicroPostType::class, $microPost);
@@ -149,6 +157,23 @@ class MicroPostController
         $this->flashBag->add('notice', 'Micro post was deleted!');
 
         return new RedirectResponse($this->router->generate('micro_post_index'));
+    }
+
+    /**
+     * @Route("/user/{username}", name="micro_post_user")
+     */
+    public function userPosts(User $userWithPosts)
+    {
+        $html = $this->twig->render('micro-post/user-post.html.twig', [
+            'posts' => $this->microPostRepository->findBy(
+                ['user' => $userWithPosts],
+                ['time' => 'DESC']
+            ),
+            'user' => $userWithPosts
+            //'posts' => $userWithPosts->getPosts()
+        ]);
+
+        return new Response($html);
     }
 
     /**
