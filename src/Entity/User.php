@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -236,5 +237,14 @@ class User implements UserInterface, \Serializable
     public function getFollowing()
     {
         return $this->following;
+    }
+
+    public function follow(User $userToFollow)
+    {
+        if ($this->getFollowing()->contains($userToFollow)) {
+            return;
+        }
+
+        $this->getFollowing()->add($userToFollow);
     }
 }
