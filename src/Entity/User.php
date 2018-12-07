@@ -134,6 +134,9 @@ class User implements AdvancedUserInterface, \Serializable
      */
     public function setRoles(array $roles): void
     {
+        $roles[] = self::ROLE_USER;
+        $roles = array_unique($roles);
+
         $this->roles = $roles;
     }
 
